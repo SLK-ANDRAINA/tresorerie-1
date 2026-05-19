@@ -1,70 +1,261 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login/Signin</title>
+    <title>Connexion / Inscription</title>
     <link rel="stylesheet" href="{% static 'css/homestyle.css' %}">
-    <!--<script src="{% static 'js/homescript.js' %}"></script>-->
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
 </head>
 <body>
+    <!-- Notifications -->
     {% if messages %}
+        <div class="messages-container" id="messages-container">
             {% for message in messages %}
-                <div class="message {{ message.tags }}">{{ message }}</div>
+                <div class="message {{ message.tags }}">
+                    <span>{{ message }}</span>
+                    <button class="message-close" onclick="this.parentElement.remove()">×</button>
+                </div>
             {% endfor %}
+        </div>
     {% endif %}
+
     <div class="container" id="container">
+        <!-- ===== FORMULAIRE INSCRIPTION ===== -->
         <div class="form-container sign-up">
             <form method="POST">
                 {% csrf_token %}
-                <h1>Hamorona Kaonty</h1>
-                <input type="text" placeholder="Anarana" name="nom" id="nom">
-                <input type="email" placeholder="Mailaka" name="mail" id="mail">
-                <input type="password" placeholder="Tenimiafina" name="mdp" id="mdp">
-                <input type="password" placeholder="Amarino ny Tenimiafina" name="mdpverif" id="mdpverif">
-                <input type="text" placeholder="Ny Tompon'Andraikitra" name="imAdmin" id="imAdmin">
-                <input type="password" placeholder="Tenimiafina ny Tompon'Andraikitra" name="mdpAdmin" id="mdpAdmin">
+                <h1>Créer un compte</h1>
+
+                <input type="text" placeholder="Nom" name="nom" id="nom" required>
+                <input type="email" placeholder="Email" name="mail" id="mail-signup" required>
+
+                <!-- Mot de passe avec œil + force -->
+                <div class="password-field">
+                    <input type="password" placeholder="Mot de passe" name="mdp" id="mdp-signup" required>
+                    <span class="toggle-password" onclick="togglePassword('mdp-signup', this)">
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+                            <path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/>
+                        </svg>
+                        <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" style="display:none;">
+                            <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/>
+                        </svg>
+                    </span>
+                </div>
+
+                <!-- Barre de force -->
+                <div class="password-strength" id="password-strength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strength-fill"></div>
+                    </div>
+                    <span class="strength-text" id="strength-text"></span>
+                </div>
+
+                <!-- Confirmation mot de passe -->
+                <div class="password-field">
+                    <input type="password" placeholder="Confirmer le mot de passe" name="mdpverif" id="mdpverif" required>
+                    <span class="toggle-password" onclick="togglePassword('mdpverif', this)">
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+                            <path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/>
+                        </svg>
+                        <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" style="display:none;">
+                            <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/>
+                        </svg>
+                    </span>
+                </div>
+                <span class="password-match" id="password-match"></span>
+
+                <input type="text" placeholder="Identifiant de l'administrateur" name="imAdmin" id="imAdmin" required>
+
+                <!-- Mot de passe Admin avec œil -->
+                <div class="password-field">
+                    <input type="password" placeholder="Mot de passe de l'administrateur" name="mdpAdmin" id="mdpAdmin" required>
+                    <span class="toggle-password" onclick="togglePassword('mdpAdmin', this)">
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+                            <path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/>
+                        </svg>
+                        <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" style="display:none;">
+                            <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/>
+                        </svg>
+                    </span>
+                </div>
+
                 <input type="hidden" name="signup_form" value="signup_form">
-                <input class="button" type="submit" value="Hamorona">
+                <input class="button" type="submit" value="S'inscrire">
             </form>
         </div>
+
+        <!-- ===== FORMULAIRE CONNEXION ===== -->
         <div class="form-container sign-in">
             <form method="POST">
                 {% csrf_token %}
-                <h1>Hiditra</h1>
-                <input type="email" placeholder="Mailaka" name="mail" id="mail">
-                <input type="password" placeholder="Tenimiafina" name="mdp" id="mdp">
+                <h1>Connexion</h1>
+
+                <input type="email" placeholder="Email" name="mail" id="mail-login" required>
+
+                <!-- Mot de passe avec œil -->
+                <div class="password-field">
+                    <input type="password" placeholder="Mot de passe" name="mdp" id="mdp-login" required>
+                    <span class="toggle-password" onclick="togglePassword('mdp-login', this)">
+                        <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20">
+                            <path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Z"/>
+                        </svg>
+                        <svg class="eye-closed" xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" style="display:none;">
+                            <path d="m644-428-58-58q9-47-27-88t-93-32l-58-58q17-8 34.5-12t37.5-4q75 0 127.5 52.5T660-500q0 20-4 37.5T644-428Zm128 126-58-56q38-29 67.5-63.5T832-500q-50-101-143.5-160.5T480-720q-29 0-57 4t-55 12l-62-62q41-17 84-25.5t90-8.5q151 0 269 83.5T920-500q-23 59-60.5 109.5T772-302Zm20 246L624-222q-35 11-70.5 16.5T480-200q-151 0-269-83.5T40-500q21-53 53-98.5t73-81.5L56-792l56-56 736 736-56 56ZM222-624q-29 26-53 57t-41 67q50 101 143.5 160.5T480-280q20 0 39-2.5t39-5.5l-36-38q-11 3-21 4.5t-21 1.5q-75 0-127.5-52.5T300-500q0-11 1.5-21t4.5-21l-84-82Zm319 93Zm-151 75Z"/>
+                        </svg>
+                    </span>
+                </div>
+
                 <input type="hidden" name="login_form" value="login_form">
-                <input class="button" type="submit" value="Hiditra">
+                <input class="button" type="submit" value="Se connecter">
             </form>
         </div>
+
         <div class="toggle-container">
             <div class="toggle">
                 <div class="toggle-panel toggle-left">
-                    <h1>Tongasoa Indray!</h1>
-                    <p>Fenoy Ireo rehetra takiana etsy afahanao mamorona Kaonty iray na koa miantsoa ny Tompon'andraikitra voalohany an'ity tranon-kala ity</p>
-                    <p>Raha toa ka efa manana enao dia miditra fotsiny</p>
-                    <button class="hidden" id="login">Hiditra </button>
+                    <h1>Bon retour !</h1>
+                    <p>Remplissez tous les champs requis pour créer un compte ou contactez l'administrateur principal de ce site.</p>
+                    <p>Si vous avez déjà un compte, connectez-vous simplement.</p>
+                    <div class="verset">
+                            <p class="verset-texte">
+                                "Confie-toi en l'Éternel de tout ton cœur,
+                                et ne t'appuie pas sur ta sagesse ;
+                                reconnais-le dans toutes tes voies,
+                                et il aplanira tes sentiers."
+                            </p>
+                            <p class="verset-ref">— Proverbes 3:5-6</p>
+                    </div>
+                    <button class="hidden" id="login">Se connecter</button>
                 </div>
                 <div class="toggle-panel toggle-right">
-                    <h1>Miarahaba eh! Tongasoa!</h1>
-                    <p>Ampidiro daholo ireo izay angatahina rehetra afahanao miditra sy mampiasa ity Tranon-kala ity</p>
-                    <p>Na mamorona Kaonty</p>
-                    <button class="hidden" id="register" >Hamorona</button>
+                    <h1>Bienvenue !</h1>
+                    <p>Entrez toutes les informations demandées pour vous connecter et utiliser ce site.</p>
+                    <p>Ou créez un compte.</p>
+                    <div class="verset">
+                        <p class="verset-texte">
+                            "Car l'Éternel donne la sagesse ;
+                            de sa bouche sortent la connaissance et l'intelligence."
+                        </p>
+                        <p class="verset-ref">— Proverbes 2:6</p>
+                    </div>
+                    <button class="hidden" id="register">S'inscrire</button>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
-        const container=document.getElementById('container');
-        const registerBtn=document.getElementById('register');
-        const loginBtn=document.getElementById('login');
-        registerBtn.addEventListener('click', ()=>{
-            container.classList.add("active");
+        // ===== Toggle entre login et signup =====
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('register');
+        const loginBtn = document.getElementById('login');
+
+        registerBtn.addEventListener('click', () => container.classList.add("active"));
+        loginBtn.addEventListener('click', () => container.classList.remove("active"));
+
+        // ===== Afficher / Masquer mot de passe =====
+        function togglePassword(inputId, toggleSpan) {
+            const input = document.getElementById(inputId);
+            const eyeOpen = toggleSpan.querySelector('.eye-open');
+            const eyeClosed = toggleSpan.querySelector('.eye-closed');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'block';
+            } else {
+                input.type = 'password';
+                eyeOpen.style.display = 'block';
+                eyeClosed.style.display = 'none';
+            }
+        }
+
+        // ===== Évaluer la force du mot de passe =====
+        function evaluerForceMotDePasse(mdp) {
+            let score = 0;
+            if (mdp.length >= 8) score++;
+            if (mdp.length >= 12) score++;
+            if (/[a-z]/.test(mdp) && /[A-Z]/.test(mdp)) score++;
+            if (/[0-9]/.test(mdp)) score++;
+            if (/[^A-Za-z0-9]/.test(mdp)) score++;
+
+            return score;
+        }
+
+        const mdpSignup = document.getElementById('mdp-signup');
+        const strengthFill = document.getElementById('strength-fill');
+        const strengthText = document.getElementById('strength-text');
+
+        mdpSignup.addEventListener('input', () => {
+            const mdp = mdpSignup.value;
+            const score = evaluerForceMotDePasse(mdp);
+
+            // Réinitialiser
+            strengthFill.className = 'strength-fill';
+            strengthText.className = 'strength-text';
+
+            if (mdp.length === 0) {
+                strengthFill.style.width = '0%';
+                strengthText.textContent = '';
+                return;
+            }
+
+            if (score <= 2) {
+                strengthFill.classList.add('weak');
+                strengthText.classList.add('weak');
+                strengthText.textContent = '🔴 Faible';
+            } else if (score <= 3) {
+                strengthFill.classList.add('medium');
+                strengthText.classList.add('medium');
+                strengthText.textContent = '🟠 Moyen';
+            } else if (score <= 4) {
+                strengthFill.classList.add('good');
+                strengthText.classList.add('good');
+                strengthText.textContent = '🟡 Bon';
+            } else {
+                strengthFill.classList.add('strong');
+                strengthText.classList.add('strong');
+                strengthText.textContent = '🟢 Fort';
+            }
         });
-        loginBtn.addEventListener('click', ()=>{
-            container.classList.remove("active");
+
+        // ===== Vérifier que les mots de passe correspondent =====
+        const mdpVerif = document.getElementById('mdpverif');
+        const passwordMatch = document.getElementById('password-match');
+
+        function verifierCorrespondance() {
+            const mdp = mdpSignup.value;
+            const verif = mdpVerif.value;
+
+            if (verif.length === 0) {
+                passwordMatch.textContent = '';
+                passwordMatch.className = 'password-match';
+                return;
+            }
+
+            if (mdp === verif) {
+                passwordMatch.textContent = '✓ Mots de passe identiques';
+                passwordMatch.className = 'password-match success';
+            } else {
+                passwordMatch.textContent = '✗ Mots de passe différents';
+                passwordMatch.className = 'password-match error';
+            }
+        }
+
+        mdpVerif.addEventListener('input', verifierCorrespondance);
+        mdpSignup.addEventListener('input', verifierCorrespondance);
+
+        // ===== Auto-fermeture des notifications =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = document.querySelectorAll('.message');
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 400);
+                }, 4000 + (index * 200));
+            });
         });
     </script>
 </body>

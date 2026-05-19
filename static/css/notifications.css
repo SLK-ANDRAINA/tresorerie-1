@@ -1,0 +1,170 @@
+/* ===================================================================
+   NOTIFICATIONS TOAST - Cohérent avec le thème de l'application
+   =================================================================== */
+
+/* Variables de couleurs (fallback si dashboard.css absent) */
+:root {
+    --notif-primary: #7380ec;
+    --notif-primary-variant: #111e88;
+    --notif-danger: #ff7782;
+    --notif-success: #41f1b6;
+    --notif-warning: #ffbb55;
+    --notif-white: #fff;
+}
+
+.messages-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.message {
+    padding: 15px 25px 15px 18px;
+    border-radius: 0.8rem;
+    box-shadow: 0 8px 24px rgba(132, 139, 200, 0.25);
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--notif-white);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 280px;
+    animation: slideInRight 0.4s ease forwards;
+    position: relative;
+    overflow: hidden;
+    border-left: 4px solid;
+}
+
+/* Animation d'apparition */
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Animation de disparition */
+.message.fade-out {
+    animation: slideOutRight 0.4s ease forwards;
+}
+
+@keyframes slideOutRight {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+}
+
+/* ============== COULEURS DU THÈME ============== */
+
+.message.success {
+    background: var(--notif-success);
+    border-left-color: #2dd4a4;
+}
+
+.message.error {
+    background: var(--notif-danger);
+    border-left-color: #ee5765;
+}
+
+.message.warning {
+    background: var(--notif-warning);
+    border-left-color: #ff9c33;
+}
+
+.message.info,
+.message.debug {
+    background: var(--notif-primary);
+    border-left-color: var(--notif-primary-variant);
+}
+
+/* ============== ICÔNES ============== */
+
+.message::before {
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.25);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.message.success::before { content: "✓"; }
+.message.error::before { content: "✕"; }
+.message.warning::before { content: "!"; font-size: 18px; }
+.message.info::before,
+.message.debug::before { content: "i"; font-style: italic; }
+
+/* ============== BOUTON DE FERMETURE ============== */
+
+.message-close {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--notif-white);
+    font-size: 18px;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: 0;
+    line-height: 1;
+    transition: opacity 200ms ease;
+}
+
+.message-close:hover {
+    opacity: 1;
+}
+
+/* ============== BARRE DE PROGRESSION ============== */
+
+.message::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    animation: progress 4s linear forwards;
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* ============== RESPONSIVE ============== */
+
+@media screen and (max-width: 768px) {
+    .messages-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+
+    .message {
+        min-width: 0;
+        font-size: 13px;
+        padding: 12px 20px 12px 16px;
+    }
+}

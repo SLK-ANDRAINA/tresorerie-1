@@ -5,16 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tableau de bord</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/dataTables.dataTables.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}" />
+
+    <!-- jQuery + DataTables -->
     <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
     <script src="{% static 'js/datatable/dataTables.js' %}"></script>
     <script src="{% static 'js/datatable/dataTables.responsive.js' %}"></script>
-    <script src="{% static 'js/script.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}"/>
-    <link rel="stylesheet" href="{% static 'css/dataTables.dataTables.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/add.css' %}">
-    
 </head>
 <body>
+    <!-- ✅ Bandeau verset défilant en haut -->
+    <div class="verset-marquee">
+        <div class="verset-marquee-track" id="verset-marquee-track">
+            <!-- Les versets seront injectés ici par JavaScript -->
+        </div>
+    </div>
+    <!-- ✅ Notifications Django -->
+    {% if messages %}
+        <div class="messages-container" id="messages-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    <span>{{ message }}</span>
+                    <button class="message-close" onclick="this.parentElement.remove()">×</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <div class="container">
         <aside>
             <div class="top">
@@ -23,195 +43,309 @@
                     <h2>TRESORERIE</h2>
                 </div>
                 <div class="close" id="close-btn">
-                    <span class="material-icons-sharp" ><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg></span>
+                    <span class="material-icons-sharp">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                            <path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/>
+                        </svg>
+                    </span>
                 </div>
             </div>
             <div class="sidebar">
                 <a href="#" onclick="showContent('dashboard', this)" class="active">
-                    <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg></span>
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path d="M520-600v-240h320v240H520ZM120-440v-400h320v400H120Zm400 320v-400h320v400H520Zm-400 0v-240h320v240H120Zm80-400h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/>
+                        </svg>
+                    </span>
                     <h3>Dashboard</h3>
                 </a>
                 <a href="#" onclick="showContent('caisse', this)">
-                    <span class="material-icons-sharp" ><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M640-520q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520Zm-320-80h200v-80H320v80ZM180-120q-34-114-67-227.5T80-580q0-92 64-156t156-64h200q29-38 70.5-59t89.5-21q25 0 42.5 17.5T720-820q0 6-1.5 12t-3.5 11q-4 11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Zm60-80h80v-80h240v80h80l62-206 98-33v-141h-40L620-720q0-20 2.5-38.5T630-796q-29 8-51 27.5T547-720H300q-58 0-99 41t-41 99q0 98 27 191.5T240-200Zm240-298Z"/></svg></span>
+                    <span class="material-icons-sharp">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                            <path d="M640-520q17 0 28.5-11.5T680-560q0-17-11.5-28.5T640-600q-17 0-28.5 11.5T600-560q0 17 11.5 28.5T640-520Zm-320-80h200v-80H320v80ZM180-120q-34-114-67-227.5T80-580q0-92 64-156t156-64h200q29-38 70.5-59t89.5-21q25 0 42.5 17.5T720-820q0 6-1.5 12t-3.5 11q-4 11-7.5 22.5T702-751l91 91h87v279l-113 37-67 224H480v-80h-80v80H180Zm60-80h80v-80h240v80h80l62-206 98-33v-141h-40L620-720q0-20 2.5-38.5T630-796q-29 8-51 27.5T547-720H300q-58 0-99 41t-41 99q0 98 27 191.5T240-200Zm240-298Z"/>
+                        </svg>
+                    </span>
                     <h3>Caisse</h3>
                 </a>
                 <a href="#" onclick="showContent('grande-caisse', this)">
-                    <span class="material-icons-sharp" ><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M444-200h70v-50q50-9 86-39t36-89q0-42-24-77t-96-61q-60-20-83-35t-23-41q0-26 18.5-41t53.5-15q32 0 50 15.5t26 38.5l64-26q-11-35-40.5-61T516-710v-50h-70v50q-50 11-78 44t-28 74q0 47 27.5 76t86.5 50q63 23 87.5 41t24.5 47q0 33-23.5 48.5T486-314q-33 0-58.5-20.5T390-396l-66 26q14 48 43.5 77.5T444-252v52Zm36 120q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></span>
+                    <span class="material-icons-sharp">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                            <path d="M444-200h70v-50q50-9 86-39t36-89q0-42-24-77t-96-61q-60-20-83-35t-23-41q0-26 18.5-41t53.5-15q32 0 50 15.5t26 38.5l64-26q-11-35-40.5-61T516-710v-50h-70v50q-50 11-78 44t-28 74q0 47 27.5 76t86.5 50q63 23 87.5 41t24.5 47q0 33-23.5 48.5T486-314q-33 0-58.5-20.5T390-396l-66 26q14 48 43.5 77.5T444-252v52Zm36 120q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+                        </svg>
+                    </span>
                     <h3>Grande Caisse</h3>
                 </a>
                 <a href="#" onclick="showContent('petite-caisse', this)">
-                    <span class="material-icons-sharp" ><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M560-440q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35ZM280-320q-33 0-56.5-23.5T200-400v-320q0-33 23.5-56.5T280-800h560q33 0 56.5 23.5T920-720v320q0 33-23.5 56.5T840-320H280Zm80-80h400q0-33 23.5-56.5T840-480v-160q-33 0-56.5-23.5T760-720H360q0 33-23.5 56.5T280-640v160q33 0 56.5 23.5T360-400Zm440 240H120q-33 0-56.5-23.5T40-240v-440h80v440h680v80ZM280-400v-320 320Z"/></svg></span>
+                    <span class="material-icons-sharp">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path d="M560-440q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35ZM280-320q-33 0-56.5-23.5T200-400v-320q0-33 23.5-56.5T280-800h560q33 0 56.5 23.5T920-720v320q0 33-23.5 56.5T840-320H280Zm80-80h400q0-33 23.5-56.5T840-480v-160q-33 0-56.5-23.5T760-720H360q0 33-23.5 56.5T280-640v160q33 0 56.5 23.5T360-400Zm440 240H120q-33 0-56.5-23.5T40-240v-440h80v440h680v80ZM280-400v-320 320Z"/>
+                        </svg>
+                    </span>
                     <h3>Petite Caisse</h3>
                 </a>
                 <a href="{% url 'logout' %}">
-                    <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg></span>
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/>
+                        </svg>
+                    </span>
                     <h3>Deconnexion</h3>
                 </a>
             </div>
         </aside>
+
         <main>
             {% block content %}
-            <!-- Le contenu spécifique à chaque utilisateur sera inclus ici -->
             {% endblock %}
         </main>
-        <div class="right">
-            <div class="top">
-                <button id="menu-btn">
-                    <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg></span>
-                </button>
-                <div class="theme-toggler">
-                    <span class="active"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="fill: #fff;"><path d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/></svg></span>
-                    <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="fill: var(--color-dark);"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/></svg></span>
-                </div>
-                <div class="profile">
-                    <div class="info">
-                        <p>Hey</p>
-                        {% if user.is_authenticated and user.is_superuser %}
-                            <small class="text-muted"><b>Admin</b></small>
-                        {% endif %}
-                        {% if user.is_authenticated and not user.is_superuser %}
-                            <small class="text-muted"><b>Users</b></small>
-                        {% endif %}
-                    </div>
-                    <div class="profile-photo">
-                        <img src="{% static 'images/logo/profile.png' %}" alt="">
-                    </div>
-                </div>
-            </div>
-            <!--END OF TOP-->
-            <div class="recent-updates">
-                <h2>Nos Projet</h2>
-                <div class="updates">
-                    <div class="update">
-                        <div class="profile-photo">
-                            <img src="{% static 'images/logo/new.png' %}" alt="">
-                        </div>
-                        <div class="message">
-                            <p><b>Projet En cours</b><br>Fanorenana Trano Manolotrony</p>
-                            <small class="text-muted">15/02/24</small>
-                        </div>
-                    </div>
-                    <div class="update">
-                        <div class="profile-photo">
-                            <img src="{% static 'images/logo/new.png' %}" alt="">
-                        </div>
-                        <div class="message">
-                            <p><b>Projet En cours</b><br>Fanorenana Estrade</p>
-                            <small class="text-muted">15/02/24</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!--END OF RECENT UPDATES-->
-            <div class="sales-analytics">
-                <h2>Besoin Fiangonana</h2>
-                <div class="item online">
-                    <div class="icon">
-                        <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M200-280v-280h80v280h-80Zm240 0v-280h80v280h-80ZM80-120v-80h800v80H80Zm600-160v-280h80v280h-80ZM80-640v-80l400-200 400 200v80H80Zm178-80h444-444Zm0 0h444L480-830 258-720Z"/></svg></span>
-                    </div>
-                    <div class="right">
-                        <div class="info">
-                            <h3>Sonorisation</h3>
-                            <small class="text-muted">15/12/25</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="item online">
-                    <div class="icon">
-                        <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M200-280v-280h80v280h-80Zm240 0v-280h80v280h-80ZM80-120v-80h800v80H80Zm600-160v-280h80v280h-80ZM80-640v-80l400-200 400 200v80H80Zm178-80h444-444Zm0 0h444L480-830 258-720Z"/></svg></span>
-                    </div>
-                    <div class="right">
-                        <div class="info">
-                            <h3>Sonorisation</h3>
-                            <small class="text-muted">15/12/25</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="item online">
-                    <div class="icon">
-                        <span><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" ><path d="M200-280v-280h80v280h-80Zm240 0v-280h80v280h-80ZM80-120v-80h800v80H80Zm600-160v-280h80v280h-80ZM80-640v-80l400-200 400 200v80H80Zm178-80h444-444Zm0 0h444L480-830 258-720Z"/></svg></span>
-                    </div>
-                    <div class="right">
-                        <div class="info">
-                            <h3>Sonorisation</h3>
-                            <small class="text-muted">15/12/25</small>
-                        </div>
-                    </div>
-                </div>
+    </div>
+
+    <!-- ✅ Barre supérieure fixe en haut à droite -->
+    <div class="top-bar">
+        <button id="menu-btn">
+            <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
+                    <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/>
+                </svg>
+            </span>
+        </button>
+
+        <div class="theme-toggler">
+            <span class="active">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="fill: #fff;">
+                    <path d="M480-360q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm0 80q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"/>
+                </svg>
+            </span>
+            <span>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" style="fill: var(--color-dark);">
+                    <path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Zm0-80q88 0 158-48.5T740-375q-20 5-40 8t-40 3q-123 0-209.5-86.5T364-660q0-20 3-40t8-40q-78 32-126.5 102T200-480q0 116 82 198t198 82Zm-10-270Z"/>
+                </svg>
+            </span>
+        </div>
+
+        <div class="profile">
+            <div class="info">
+                <p>Hey</p>
                 {% if user.is_authenticated and user.is_superuser %}
-                <div class="item add-product">
-                    <div>
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px">
-                                <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
-                            </svg>
-                        </span>
-                        <h3>Ajouter Projet</h3>
-                    </div>
-                </div>
+                    <small class="text-muted"><b>Admin</b></small>
                 {% endif %}
+                {% if user.is_authenticated and not user.is_superuser %}
+                    <small class="text-muted"><b>Users</b></small>
+                {% endif %}
+            </div>
+            <div class="profile-photo">
+                <img src="{% static 'images/logo/profile.png' %}" alt="">
             </div>
         </div>
     </div>
-</body>
-<script>
-const sideMenu = document.querySelector("aside");
-const menuBtn = document.querySelector("#menu-btn");
-const closeBtn = document.querySelector("#close-btn");
-const themeToggler = document.querySelector(".theme-toggler");
 
-menuBtn.addEventListener('click', () =>{
-    sideMenu.style.display='block';
-})
+    <!-- Scripts -->
+    <script src="{% static 'js/script.js' %}"></script>
 
-closeBtn.addEventListener('click', () =>{
-    sideMenu.style.display='none';
-})
+    <script>
+        const sideMenu = document.querySelector("aside");
+        const menuBtn = document.querySelector("#menu-btn");
+        const closeBtn = document.querySelector("#close-btn");
+        const themeToggler = document.querySelector(".theme-toggler");
 
-themeToggler.addEventListener('click', () =>{
-    document.body.classList.toggle('dark-theme-variables');
-    themeToggler.querySelector('span:nth-child(1)').classList.toggle('active');
-    themeToggler.querySelector('span:nth-child(2)').classList.toggle('active');
-})
+        menuBtn.addEventListener('click', () => {
+            sideMenu.style.display = 'block';
+        });
 
+        closeBtn.addEventListener('click', () => {
+            sideMenu.style.display = 'none';
+        });
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Affiche le Dashboard par défaut
-    const defaultLink = document.querySelector('.sidebar a:first-child');
-    showContent('dashboard', defaultLink);
-});
+        themeToggler.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme-variables');
+            themeToggler.querySelector('span:nth-child(1)').classList.toggle('active');
+            themeToggler.querySelector('span:nth-child(2)').classList.toggle('active');
+        });
 
-function showContent(sectionId, linkElement) {
-    // Masquer toutes les sections
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(section => section.style.display = 'none');
+        document.addEventListener('DOMContentLoaded', () => {
+            const defaultLink = document.querySelector('.sidebar a:first-child');
+            showContent('dashboard', defaultLink);
 
-    // Afficher la section correspondante
-    document.getElementById(sectionId).style.display = 'block';
+            // ✅ Faire disparaître automatiquement les notifications
+            const messages = document.querySelectorAll('.message');
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    msg.classList.add('fade-out');
+                    setTimeout(() => msg.remove(), 400);
+                }, 4000 + (index * 200));
+            });
+        });
 
-    // Supprimer l'état actif de tous les liens du menu
-    const links = document.querySelectorAll('.sidebar a');
-    links.forEach(link => link.classList.remove('active'));
+        function showContent(sectionId, linkElement) {
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.style.display = 'none');
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.style.display = 'block';
+            }
+            const links = document.querySelectorAll('.sidebar a');
+            links.forEach(link => link.classList.remove('active'));
+            if (linkElement) {
+                linkElement.classList.add('active');
+            }
+        }
 
-    // Ajouter la classe active au lien cliqué
-    linkElement.classList.add('active');
-}
+        $(document).ready(function () {
+            $(".datatable").DataTable({
+                language: {
+                    url: "{% static 'js/langue/fr_fr.json' %}",
+                },
+                pageLength: 15,
+                lengthMenu: [5, 10, 25, 50, 100],
+                order: [[0, "asc"]],
+                searching: true,
+                paging: true,
+                info: true,
+            });
+        });
+    </script>
+    <script>
+    // ===== Versets bibliques pour le bandeau défilant =====
+    // ===== Versets bibliques pour le bandeau défilant =====
+const versets = [
+    // ===== CONFIANCE EN DIEU =====
+    { texte: "Confie-toi en l'Éternel de tout ton cœur, et ne t'appuie pas sur ta sagesse.", ref: "Proverbes 3:5" },
+    { texte: "Reconnais-le dans toutes tes voies, et il aplanira tes sentiers.", ref: "Proverbes 3:6" },
+    { texte: "L'Éternel est mon berger : je ne manquerai de rien.", ref: "Psaume 23:1" },
+    { texte: "Heureux l'homme qui a mis sa confiance en l'Éternel.", ref: "Psaume 40:5" },
+    { texte: "Ne crains rien, car je suis avec toi.", ref: "Ésaïe 41:10" },
+    { texte: "L'Éternel combattra pour vous ; et vous, gardez le silence.", ref: "Exode 14:14" },
+    { texte: "L'Éternel est ma lumière et mon salut : de qui aurais-je crainte ?", ref: "Psaume 27:1" },
+    { texte: "Tu garderas dans une paix parfaite celui dont la pensée est ferme.", ref: "Ésaïe 26:3" },
+    { texte: "Je lève mes yeux vers les montagnes : d'où me viendra le secours ?", ref: "Psaume 121:1" },
+    { texte: "Mon secours vient de l'Éternel, qui a fait les cieux et la terre.", ref: "Psaume 121:2" },
 
-$(document).ready(function () {
-    $(".datatable").DataTable({
-      language: {
-        url: "{% static 'js/langue/fr_fr.json' %}",
-      },
-      pageLength: 15,
-      lengthMenu: [5, 10, 25, 50, 100],
-      order: [[0, "asc"]],
-      searching: true,
-      paging: true,
-      info: true,
+    // ===== FORCE & ENCOURAGEMENT =====
+    { texte: "Je puis tout par celui qui me fortifie.", ref: "Philippiens 4:13" },
+    { texte: "Fortifie-toi et prends courage ; ne t'effraie point.", ref: "Josué 1:9" },
+    { texte: "Ceux qui se confient en l'Éternel renouvellent leur force.", ref: "Ésaïe 40:31" },
+    { texte: "L'Éternel est ma force et mon bouclier ; en lui mon cœur se confie.", ref: "Psaume 28:7" },
+    { texte: "Dieu est pour nous un refuge et un appui, un secours qui ne manque jamais.", ref: "Psaume 46:2" },
+    { texte: "Tout concourt au bien de ceux qui aiment Dieu.", ref: "Romains 8:28" },
+    { texte: "Si Dieu est pour nous, qui sera contre nous ?", ref: "Romains 8:31" },
+    { texte: "L'Éternel marchera lui-même devant toi, il sera lui-même avec toi.", ref: "Deutéronome 31:8" },
+
+    // ===== SAGESSE =====
+    { texte: "Car l'Éternel donne la sagesse ; de sa bouche sortent la connaissance et l'intelligence.", ref: "Proverbes 2:6" },
+    { texte: "La crainte de l'Éternel est le commencement de la sagesse.", ref: "Proverbes 9:10" },
+    { texte: "Si quelqu'un manque de sagesse, qu'il la demande à Dieu.", ref: "Jacques 1:5" },
+    { texte: "Acquiers la sagesse, acquiers l'intelligence ; n'oublie pas les paroles de ma bouche.", ref: "Proverbes 4:5" },
+    { texte: "L'homme sage a de la force, et celui qui a de la science est puissant.", ref: "Proverbes 24:5" },
+
+    // ===== ARGENT & GÉNÉROSITÉ =====
+    { texte: "L'amour de l'argent est une racine de tous les maux.", ref: "1 Timothée 6:10" },
+    { texte: "Honore l'Éternel avec tes biens, et avec les prémices de tout ton revenu.", ref: "Proverbes 3:9" },
+    { texte: "Donnez, et il vous sera donné.", ref: "Luc 6:38" },
+    { texte: "Tout don excellent et tout cadeau parfait viennent d'en haut.", ref: "Jacques 1:17" },
+    { texte: "Que chacun donne comme il l'a résolu en son cœur ; car Dieu aime celui qui donne avec joie.", ref: "2 Corinthiens 9:7" },
+    { texte: "Il y a plus de bonheur à donner qu'à recevoir.", ref: "Actes 20:35" },
+    { texte: "Apportez à la maison du trésor toutes les dîmes.", ref: "Malachie 3:10" },
+    { texte: "Ne vous amassez pas des trésors sur la terre, mais amassez-vous des trésors dans le ciel.", ref: "Matthieu 6:19-20" },
+    { texte: "Vous ne pouvez servir Dieu et Mammon.", ref: "Matthieu 6:24" },
+    { texte: "Celui qui aime l'argent n'est pas rassasié par l'argent.", ref: "Ecclésiaste 5:9" },
+    { texte: "L'âme bienfaisante sera rassasiée, et celui qui arrose sera lui-même arrosé.", ref: "Proverbes 11:25" },
+    { texte: "Celui qui donne au pauvre prête à l'Éternel, qui lui rendra selon son œuvre.", ref: "Proverbes 19:17" },
+
+    // ===== TRAVAIL & FIDÉLITÉ =====
+    { texte: "Tout ce que vous faites, faites-le de bon cœur, comme pour le Seigneur et non pour des hommes.", ref: "Colossiens 3:23" },
+    { texte: "Recommande à l'Éternel tes œuvres, et tes projets réussiront.", ref: "Proverbes 16:3" },
+    { texte: "Celui qui est fidèle dans les moindres choses l'est aussi dans les grandes.", ref: "Luc 16:10" },
+    { texte: "Cherchez premièrement le royaume et la justice de Dieu ; et toutes ces choses vous seront données par-dessus.", ref: "Matthieu 6:33" },
+    { texte: "Soyez forts, ne vous relâchez point, car il y aura un salaire pour vos œuvres.", ref: "2 Chroniques 15:7" },
+    { texte: "Bien, bon et fidèle serviteur ; tu as été fidèle en peu de choses.", ref: "Matthieu 25:21" },
+    { texte: "L'âme du paresseux a des désirs qu'il ne peut satisfaire ; mais l'âme des hommes diligents sera rassasiée.", ref: "Proverbes 13:4" },
+
+    // ===== PAIX & RÉCONFORT =====
+    { texte: "Je vous laisse la paix, je vous donne ma paix.", ref: "Jean 14:27" },
+    { texte: "Venez à moi, vous tous qui êtes fatigués et chargés, et je vous donnerai du repos.", ref: "Matthieu 11:28" },
+    { texte: "Ne vous inquiétez de rien ; mais en toute chose faites connaître vos besoins à Dieu.", ref: "Philippiens 4:6" },
+    { texte: "Et la paix de Dieu, qui surpasse toute intelligence, gardera vos cœurs.", ref: "Philippiens 4:7" },
+    { texte: "Déchargez-vous sur lui de tous vos soucis, car lui-même prend soin de vous.", ref: "1 Pierre 5:7" },
+    { texte: "Si quelqu'un est en Christ, il est une nouvelle création.", ref: "2 Corinthiens 5:17" },
+
+    // ===== AMOUR DE DIEU =====
+    { texte: "Car Dieu a tant aimé le monde qu'il a donné son Fils unique.", ref: "Jean 3:16" },
+    { texte: "Nous l'aimons, parce qu'il nous a aimés le premier.", ref: "1 Jean 4:19" },
+    { texte: "Rien ne pourra nous séparer de l'amour de Dieu manifesté en Jésus-Christ.", ref: "Romains 8:39" },
+    { texte: "L'amour est patient, il est plein de bonté.", ref: "1 Corinthiens 13:4" },
+    { texte: "L'Éternel ton Dieu est au milieu de toi, comme un héros qui sauve.", ref: "Sophonie 3:17" },
+
+    // ===== PRIÈRE & FOI =====
+    { texte: "Demandez, et l'on vous donnera ; cherchez, et vous trouverez.", ref: "Matthieu 7:7" },
+    { texte: "La foi est une ferme assurance des choses qu'on espère.", ref: "Hébreux 11:1" },
+    { texte: "Sans la foi il est impossible de lui être agréable.", ref: "Hébreux 11:6" },
+    { texte: "Tout est possible à celui qui croit.", ref: "Marc 9:23" },
+    { texte: "Si vous aviez de la foi comme un grain de sénevé, rien ne vous serait impossible.", ref: "Matthieu 17:20" },
+    { texte: "Priez sans cesse.", ref: "1 Thessaloniciens 5:17" },
+
+    // ===== PSAUMES DE LOUANGE =====
+    { texte: "Que tout ce qui respire loue l'Éternel ! Louez l'Éternel !", ref: "Psaume 150:6" },
+    { texte: "Ceci est le jour que l'Éternel a fait : qu'il soit pour nous un sujet d'allégresse et de joie !", ref: "Psaume 118:24" },
+    { texte: "Louez l'Éternel, car il est bon, car sa miséricorde dure à toujours !", ref: "Psaume 136:1" },
+    { texte: "Bénis l'Éternel, mon âme ! Que tout ce qui est en moi bénisse son saint nom !", ref: "Psaume 103:1" },
+    { texte: "Mon âme, bénis l'Éternel, et n'oublie aucun de ses bienfaits !", ref: "Psaume 103:2" },
+
+    // ===== ESPÉRANCE =====
+    { texte: "Car je connais les projets que j'ai formés sur vous, projets de paix et non de malheur.", ref: "Jérémie 29:11" },
+    { texte: "Vous me chercherez, et vous me trouverez, si vous me cherchez de tout votre cœur.", ref: "Jérémie 29:13" },
+    { texte: "Voici, je fais toutes choses nouvelles.", ref: "Apocalypse 21:5" },
+    { texte: "Les afflictions du temps présent ne sauraient être comparées à la gloire à venir.", ref: "Romains 8:18" },
+    { texte: "L'espérance différée rend le cœur malade, mais le désir accompli est un arbre de vie.", ref: "Proverbes 13:12" },
+
+    // ===== HUMILITÉ =====
+    { texte: "Le commencement de la sagesse, c'est la crainte de l'Éternel ; et la science des saints, c'est l'intelligence.", ref: "Proverbes 9:10" },
+    { texte: "Dieu résiste aux orgueilleux, mais il fait grâce aux humbles.", ref: "Jacques 4:6" },
+    { texte: "Humiliez-vous devant le Seigneur, et il vous élèvera.", ref: "Jacques 4:10" },
+    { texte: "Avant la ruine, le cœur de l'homme s'élève ; mais l'humilité précède la gloire.", ref: "Proverbes 18:12" },
+
+    // ===== JUSTICE & INTÉGRITÉ =====
+    { texte: "Celui qui marche dans l'intégrité marche avec assurance.", ref: "Proverbes 10:9" },
+    { texte: "La balance fausse est en horreur à l'Éternel, mais le poids juste lui est agréable.", ref: "Proverbes 11:1" },
+    { texte: "Mieux vaut peu, avec la justice, que de grands revenus, avec l'injustice.", ref: "Proverbes 16:8" },
+    { texte: "Que la justice coule comme de l'eau, et la droiture comme un torrent qui jamais ne tarit.", ref: "Amos 5:24" },
+
+    // ===== PROTECTION =====
+    { texte: "L'Éternel te gardera de tout mal, il gardera ton âme.", ref: "Psaume 121:7" },
+    { texte: "Celui qui demeure sous l'abri du Très-Haut repose à l'ombre du Tout-Puissant.", ref: "Psaume 91:1" },
+    { texte: "Il donnera des ordres à ses anges à ton sujet, afin qu'ils te gardent dans toutes tes voies.", ref: "Psaume 91:11" }
+];
+
+    // Icône SVG (Bible)
+    const iconeBible = `
+        <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 -960 960 960" width="18">
+            <path d="M300-80q-58 0-99-41t-41-99v-520q0-58 41-99t99-41h500v600q-25 0-42.5 17.5T740-220q0 25 17.5 42.5T800-160v80H300Zm-60-267q14-7 29-10t31-3h20v-440h-20q-25 0-42.5 17.5T240-740v393Zm160-13h320v-440H400v440Zm-160 13v-453 453Zm60 187h373q-6-14-9.5-28.5T660-220q0-16 3-31t10-29H300q-26 0-43 17.5T240-220q0 26 17 43t43 17Z"/>
+        </svg>
+    `;
+
+    // Construire le HTML pour un verset
+    function creerHtmlVerset(v) {
+        return `
+            <div class="verset-item">
+                <span class="verset-item-icon">${iconeBible}</span>
+                <span class="verset-item-texte">"${v.texte}"</span>
+                <span class="verset-item-ref">— ${v.ref}</span>
+                <span class="verset-item-sep">✦</span>
+            </div>
+        `;
+    }
+
+    // Injecter les versets (deux fois pour un défilement infini fluide)
+    document.addEventListener('DOMContentLoaded', function() {
+        const track = document.getElementById('verset-marquee-track');
+        if (!track) return;
+
+        // Mélanger les versets pour varier l'ordre à chaque visite
+        const versetsMixed = [...versets].sort(() => Math.random() - 0.5);
+
+        // Construire le HTML (on duplique le contenu pour la boucle infinie)
+        const html = versetsMixed.map(creerHtmlVerset).join('');
+        track.innerHTML = html + html;  // double = boucle invisible
     });
-  });
-
 </script>
-
-
+</body>
 </html>

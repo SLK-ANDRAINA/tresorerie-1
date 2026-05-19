@@ -241,3 +241,180 @@ body{
         transform: translateY(50%);
     }
 }
+
+/* ===================================================================
+   AGRANDIR LA CARTE POUR LE FORMULAIRE D'INSCRIPTION
+   =================================================================== */
+
+.container {
+    min-height: 550px;  /* ✅ plus grand pour accueillir tous les champs */
+}
+
+/* ===================================================================
+   CHAMP MOT DE PASSE AVEC ŒIL
+   =================================================================== */
+
+.password-field {
+    position: relative;
+    width: 100%;
+    margin: 6px 0;
+}
+
+.password-field input {
+    width: 100%;
+    background-color: #eee;
+    border: none;
+    padding: 10px 40px 10px 15px !important;
+    font-size: 13px;
+    border-radius: 8px;
+    outline: none;
+    margin: 0 !important;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    display: flex;
+    align-items: center;
+    user-select: none;
+    transition: color 200ms ease;
+}
+
+.toggle-password:hover {
+    color: #512da8;
+}
+
+.toggle-password svg {
+    fill: currentColor;
+    width: 20px;
+    height: 20px;
+}
+
+/* ===================================================================
+   INDICATEUR DE FORCE DU MOT DE PASSE
+   =================================================================== */
+
+.password-strength {
+    width: 100%;
+    margin: 0 0 6px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.strength-bar {
+    width: 100%;
+    height: 5px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 300ms ease, background-color 300ms ease;
+    border-radius: 3px;
+}
+
+.strength-fill.weak {
+    width: 25%;
+    background: #ff7782;
+}
+
+.strength-fill.medium {
+    width: 50%;
+    background: #ffbb55;
+}
+
+.strength-fill.good {
+    width: 75%;
+    background: #ffdb55;
+}
+
+.strength-fill.strong {
+    width: 100%;
+    background: #41f1b6;
+}
+
+.strength-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: #666;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.strength-text.weak { color: #ff7782; }
+.strength-text.medium { color: #ff9c33; }
+.strength-text.good { color: #d4a017; }
+.strength-text.strong { color: #2dd4a4; }
+
+/* ===================================================================
+   VÉRIFICATION CORRESPONDANCE MOTS DE PASSE
+   =================================================================== */
+
+.password-match {
+    font-size: 11px;
+    font-weight: 600;
+    margin: 0 0 6px 0;
+    text-align: left;
+    width: 100%;
+    min-height: 14px;
+    line-height: 1.2;
+}
+
+.password-match.success {
+    color: #2dd4a4;
+}
+
+.password-match.error {
+    color: #ff7782;
+}
+
+/* ===================================================================
+   RESPONSIVE
+   =================================================================== */
+
+@media screen and (max-width: 768px) {
+    .container {
+        min-height: 750px;
+    }
+}
+
+
+/* ===================================================================
+   VERSETS BIBLIQUES (panneaux toggle)
+   =================================================================== */
+
+.verset {
+    margin: 15px 0;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border-left: 3px solid rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    max-width: 90%;
+}
+
+.verset-texte {
+    font-style: italic;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0 0 8px 0;
+    text-align: center;
+}
+
+.verset-ref {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: right;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
